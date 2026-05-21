@@ -6,22 +6,21 @@ import { Expenses } from './expenses.entity';
 import { ExpensesController } from './expenses.controller';
 import { ExpensesService } from './expenses.service';
 
-
 @Module({
   imports: [
-    ConfigModule.forRoot({isGlobal: true}),
+    ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
         url: configService.get<string>('DB_HOST'),
-        database: "expenses",
+        database: 'expenses',
         autoLoadEntities: true,
         synchronize: true,
       }),
     }),
-    TypeOrmModule.forFeature([Expenses])
+    TypeOrmModule.forFeature([Expenses]),
   ],
   controllers: [ExpensesController],
   providers: [ExpensesService],

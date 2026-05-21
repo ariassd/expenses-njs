@@ -1,13 +1,13 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
-import { Status } from './expenses.dto';
+import { Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
+import { Status } from './dto/expenses-create.dto';
 
 @Entity()
 export class Expenses {
-  @PrimaryColumn({ type: 'uuid' })
-  id: string; // UUID
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-  @Column('int')
-  amount: number; // Greater than 0
+  @Column({ type: 'int' })
+  amount: number;
 
   @Column({ type: 'varchar', length: 100 })
   category: string;
@@ -18,6 +18,6 @@ export class Expenses {
   @Column({ type: 'varchar', length: 20 })
   status: Status;
 
-  @Column({ type: 'date' })
-  date: Date; // Cannot be in the future
+  @Column({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
+  date: Date;
 }

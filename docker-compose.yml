@@ -1,0 +1,36 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres-db
+    # restart: always
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root_secure
+      - POSTGRES_DB=postgres
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql:Z,U
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: expenses
+    environment:
+      DATABASE_URL: postgresql://root:root_secure@localhost:5432/expenses
+      NODE_ENV: development
+      PORT: 3000
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./backend/src:/app/src
+    command: npm run start:dev
+
+volumes:
+  postgres_data:
