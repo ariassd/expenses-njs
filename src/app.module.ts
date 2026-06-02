@@ -15,9 +15,9 @@ import { ExpensesService } from './expenses.service';
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
         url: configService.get<string>('DB_HOST'),
-        database: 'expenses',
         autoLoadEntities: true,
-        synchronize: true,
+        synchronize: configService.get<string>('TYPEORM_SYNCHRONIZE') === 'true',
+        logging: configService.get<string>('TYPEORM_LOGGING') === 'true',
       }),
     }),
     TypeOrmModule.forFeature([Expenses]),

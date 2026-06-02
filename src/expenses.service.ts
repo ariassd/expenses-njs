@@ -1,8 +1,4 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { Repository } from 'typeorm';
@@ -21,6 +17,10 @@ export class ExpensesService {
   ) {}
 
   async create(dto: ExpensesCreateDTO): Promise<Expenses> {
+    dto['year'] = new Date().getFullYear();
+    dto['month'] = new Date().getMonth();
+    dto['day'] = new Date().getDate();
+
     const r = await this.repository
       .createQueryBuilder()
       .insert()
@@ -49,11 +49,21 @@ export class ExpensesService {
       );
     }
 
-    const [items, totalItems] = await queryBuilder
+    let totalItems = -1;
+    let items: Expenses[];
+
+    const query = queryBuilder
       .orderBy('expense.date', sort == SortOrder.ASC ? 'ASC' : 'DESC')
       .skip((page - 1) * limit)
-      .take(limit)
-      .getManyAndCount();
+      .take(limit);
+
+    if (pagination.countTotal) {
+      const result = await query.getManyAndCount();
+      items = result[0];
+      totalItems = result[1];
+    } else {
+      items = await query.getMany();
+    }
 
     return {
       data: items,
@@ -68,10 +78,7 @@ export class ExpensesService {
     return this.repository.findOneBy({ id });
   }
 
-  async changeStatus(
-    id: string,
-    dto: ExpensesUpdateStatusDTO,
-  ): Promise<Expenses | null> {
+  async changeStatus(id: string, dto: ExpensesUpdateStatusDTO): Promise<Expenses | null> {
     const r = await this.repository
       .createQueryBuilder()
       .update()
@@ -82,9 +89,7 @@ export class ExpensesService {
 
     const updated = r.raw[0];
     if (!updated) {
-      throw new NotFoundException(
-        'Expense not found or its status is not valid',
-      );
+      throw new NotFoundException('Expense not found or its status is not valid');
     }
     return updated;
   }

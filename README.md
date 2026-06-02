@@ -54,6 +54,8 @@ Create a `.env` file in the project root with the following variables:
 NODE_ENV=development
 PORT=3000
 
+CURRENCIES=EUR,USD,CRC
+
 # TypeORM Configuration
 TYPEORM_SYNCHRONIZE=true
 TYPEORM_LOGGING=true
