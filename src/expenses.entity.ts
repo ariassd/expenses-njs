@@ -1,5 +1,6 @@
 import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 import { Status } from './dto/expenses-create.dto';
+import { Transform } from 'class-transformer';
 
 @Entity()
 @Index(['clientId'])

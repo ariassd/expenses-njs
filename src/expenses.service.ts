@@ -37,33 +37,39 @@ export class ExpensesService {
   }
 
   async list(dto: ListFilterDTO): Promise<PaginationResult<Expenses>> {
-    const { pagination, queryFilter } = dto;
+    const { pagination, queryFilter, fromDate, toDate } = dto;
     const { page, limit, sort } = pagination;
 
     const queryBuilder = this.repository.createQueryBuilder('expense');
 
     if (queryFilter) {
       queryBuilder.andWhere(
-        '(expense.id ILIKE :query OR expense.amount::text ILIKE :query OR expense.description ILIKE :query OR expense.status ILIKE :query OR expense.category ILIKE :query)',
+        '( CAST(expense.id AS TEXT) ILIKE :query OR ' +
+          'CAST(expense.amount AS TEXT) ILIKE :query OR ' +
+          'CAST(expense.description AS TEXT) ILIKE :query OR ' +
+          'CAST(expense.status AS TEXT) ILIKE :query OR ' +
+          'CAST(expense.category AS TEXT) ILIKE :query)',
         { query: `%${queryFilter}%` },
       );
     }
 
-    let totalItems = -1;
-    let items: Expenses[];
-
-    const query = queryBuilder
-      .orderBy('expense.date', sort == SortOrder.ASC ? 'ASC' : 'DESC')
-      .skip((page - 1) * limit)
-      .take(limit);
-
-    if (pagination.countTotal) {
-      const result = await query.getManyAndCount();
-      items = result[0];
-      totalItems = result[1];
-    } else {
-      items = await query.getMany();
+    if (fromDate) {
+      const fdYear = (new Date(fromDate)).getFullYear();
+      queryBuilder.andWhere('expense.year >= :fdYear', { fdYear });
+      queryBuilder.andWhere('expense.creationDate >= :fromDate', { fromDate });
     }
+
+    if (toDate) {
+      const tdYear = (new Date(toDate)).getFullYear();
+      queryBuilder.andWhere('expense.year <= :tdYear', { tdYear });
+      queryBuilder.andWhere('expense.creationDate <= :toDate', { toDate });
+    }
+
+    const [items, totalItems] = await queryBuilder
+      .orderBy('expense.creationDate', sort == SortOrder.ASC ? 'ASC' : 'DESC')
+      .skip((page - 1) * limit)
+      .take(limit)
+      .getManyAndCount();
 
     return {
       data: items,
