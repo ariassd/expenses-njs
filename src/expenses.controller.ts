@@ -1,7 +1,9 @@
-import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { ExpensesService } from './expenses.service';
 import { Expenses } from './expenses.entity';
 import { ExpensesUpdateStatusDTO } from './dto/expenses-update-status.dto';
+import { ListFilterDTO } from './dto/list-filter.dto';
+import { PaginationResult } from './dto/pagination-result.dto';
 
 @Controller('v1/expenses')
 export class ExpensesController {
@@ -13,8 +15,8 @@ export class ExpensesController {
   }
 
   @Get()
-  async list(): Promise<Expenses[]> {
-    return this.service.list();
+  async list(@Query() dto: ListFilterDTO): Promise<PaginationResult<Expenses>> {
+    return this.service.list(dto);
   }
 
   @Get(':id')

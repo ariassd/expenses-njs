@@ -9,6 +9,9 @@ import { Repository } from 'typeorm';
 import { ExpensesCreateDTO } from './dto/expenses-create.dto';
 import { Expenses } from './expenses.entity';
 import { ExpensesUpdateStatusDTO } from './dto/expenses-update-status.dto';
+import { ListFilterDTO } from './dto/list-filter.dto';
+import { PaginationResult } from './dto/pagination-result.dto';
+import { SortOrder } from './dto/pagination.dto';
 
 @Injectable()
 export class ExpensesService {
@@ -33,8 +36,32 @@ export class ExpensesService {
     return ne;
   }
 
-  async list(): Promise<Expenses[]> {
-    return (await this.repository.find()).flat();
+  async list(dto: ListFilterDTO): Promise<PaginationResult<Expenses>> {
+    const { pagination, queryFilter } = dto;
+    const { page, limit, sort } = pagination;
+
+    const queryBuilder = this.repository.createQueryBuilder('expense');
+
+    if (queryFilter) {
+      queryBuilder.andWhere(
+        '(expense.id ILIKE :query OR expense.amount::text ILIKE :query OR expense.description ILIKE :query OR expense.status ILIKE :query OR expense.category ILIKE :query)',
+        { query: `%${queryFilter}%` },
+      );
+    }
+
+    const [items, totalItems] = await queryBuilder
+      .orderBy('expense.date', sort == SortOrder.ASC ? 'ASC' : 'DESC')
+      .skip((page - 1) * limit)
+      .take(limit)
+      .getManyAndCount();
+
+    return {
+      data: items,
+      page,
+      limit,
+      sort,
+      totalItems,
+    };
   }
 
   async getOne(id: string): Promise<Expenses | null> {
@@ -55,7 +82,9 @@ export class ExpensesService {
 
     const updated = r.raw[0];
     if (!updated) {
-      throw new NotFoundException('Expense not found or its status is not valid');
+      throw new NotFoundException(
+        'Expense not found or its status is not valid',
+      );
     }
     return updated;
   }
