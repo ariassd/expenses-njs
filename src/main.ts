@@ -10,6 +10,7 @@ async function bootstrap() {
   // 1700 is the OID for the NUMERIC type in PostgreSQL
   types.setTypeParser(1700, (val) => parseFloat(val));
   
+  app.enableShutdownHooks();
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,

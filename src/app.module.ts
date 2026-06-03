@@ -1,4 +1,5 @@
-import { Module } from '@nestjs/common';
+import { Logger, Module, OnApplicationShutdown } from '@nestjs/common';
+import { DataSource } from 'typeorm';
 
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -26,4 +27,20 @@ import { ExpensesService } from './expenses.service';
   controllers: [ExpensesController],
   providers: [ExpensesService],
 })
-export class AppModule {}
+export class AppModule implements OnApplicationShutdown {
+  private logger = new Logger();
+  constructor(private readonly dataSource: DataSource) {}
+
+  async onApplicationShutdown() {
+    this.logger.log('Starting graceful shutdown...');
+
+    try {
+      await this.dataSource.destroy();
+      this.logger.log('Database connection closed successfully.');
+    } catch (error) {
+      this.logger.error('Error closing database connection:', error);
+    }
+
+    this.logger.log('Application is fully shut down.');
+  }
+}
