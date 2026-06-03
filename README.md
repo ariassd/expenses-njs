@@ -12,14 +12,16 @@ A RESTful microservice for managing expenses, built with **NestJS**, **TypeORM**
 - **Update** expense status with business rules validation
 - **Search** across multiple fields (id, amount, description, status, category)
 - **Pagination** support with configurable page size and sort order
+- **Aggregations** - Track expense counts and totals by client, category, year, month, and currency
 
 ## Tech Stack
 
-- **Runtime**: Node.js 18+
+- **Runtime**: Node.js 26+
 - **Framework**: NestJS
 - **Database**: PostgreSQL
 - **ORM**: TypeORM
 - **Validation**: class-validator
+- **Documentation**: Swagger
 
 ## Project Setup
 
@@ -47,7 +49,6 @@ Create a `.env` file in the project root with the following variables:
 
 ```env
 
-# Database Connection String (alternative to individual settings)
 # DATABASE_URL=postgresql://postgres:your_password@localhost:5432/expenses_db
 
 # Application Configuration
@@ -65,7 +66,7 @@ TYPEORM_LOGGING=true
 
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
-| `DATABASE_URL` | No | - | Full connection string (overrides individual DB_* settings) |
+| `DATABASE_URL` | Yes | - | Full connection string |
 | `NODE_ENV` | No | development | Environment mode (development, production, test) |
 | `PORT` | No | 3000 | HTTP server port |
 | `TYPEORM_SYNCHRONIZE` | No | false | Auto-create database tables (for development only) |
@@ -73,28 +74,24 @@ TYPEORM_LOGGING=true
 
 ## API Documentation
 
-### Base URL
+You can find OpenAPI/Swagger documentation in the `./api-docs` folder. The documentation includes:
+- `swagger-spec.json` - OpenAPI specification in JSON format
+- `swagger-spec.yml` - OpenAPI specification in YAML format
+
+To update the documentation, run:
+```bash
+npm run gen-docs
+```
+
+This script generates the documentation files based on the current API routes and decorators.
+
+
+
+
+## Base URL
 ```
 http://localhost:3000/v1/expenses
 ```
-
-### Endpoints
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `POST` | `/` | Create a new expense |
-| `GET` | `/` | List all expenses with pagination and filtering |
-| `GET` | `/:id` | Get a single expense by ID |
-| `PUT` | `/:id/status` | Update expense status |
-
-### Query Parameters for List Endpoint
-
-| Parameter | Type | Required | Default | Description |
-|-----------|------|----------|---------|-------------|
-| `queryFilter` | string | No | - | Search term (matches id, amount, description, status, category) |
-| `pagination.page` | number | No | 1 | Page number |
-| `pagination.limit` | number | No | 25 | Items per page |
-| `pagination.sort` | enum | No | asc | Sort order (asc/desc) |
 
 ### Example Requests
 
@@ -113,25 +110,6 @@ curl -X GET "http://localhost:3000/v1/expenses?queryFilter=food"
 curl -X GET "http://localhost:3000/v1/expenses?queryFilter=travel&pagination.page=2&pagination.limit=50"
 ```
 
-## Project Structure
-
-```
-expenses/
-├── src/
-│   ├── expenses.controller.ts    # Route handlers
-│   ├── expenses.service.ts       # Business logic
-│   ├── expenses.module.ts        # Module configuration
-│   ├── expenses.entity.ts        # TypeORM entity
-│   └── dto/
-│       ├── expenses-create.dto.ts
-│       ├── expenses-update-status.dto.ts
-│       ├── list-filter.dto.ts    # Filter and pagination DTO
-│       ├── pagination.dto.ts     # Pagination configuration
-│       └── pagination-result.dto.ts
-├── .env                         # Environment configuration
-└── README.md
-```
-
 ## Running Tests
 
 ```bash
@@ -145,24 +123,10 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
-## Database Schema
-
-The `expenses` table contains the following columns:
-
-| Column | Type | Description |
-|--------|------|-------------|
-| `id` | UUID | Primary key |
-| `amount` | Integer | Expense amount |
-| `category` | VARCHAR(100) | Expense category |
-| `description` | VARCHAR(500) | Detailed description |
-| `status` | VARCHAR(20) | Current status (pending, approved, rejected, voided) |
-| `date` | TIMESTAMPTZ | Creation timestamp |
 
 ## Stay in Touch
 
-- **Author**: Luis Arias
-- **Email**: [ariassd@gmail.com](mailto:ariassd@gmail.com)
-- **GitHub**: [@ariassd](https://github.com/ariassd)
+**Author**: Luis Arias | [@ariassd](https://github.com/ariassd)
 
 ## License
 
