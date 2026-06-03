@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Expenses } from './expenses.entity';
+import { ExpensesAggregation } from './expenses-aggregation.entity';
 import { ExpensesController } from './expenses.controller';
 import { ExpensesService } from './expenses.service';
 
@@ -20,7 +21,7 @@ import { ExpensesService } from './expenses.service';
         logging: configService.get<string>('TYPEORM_LOGGING') === 'true',
       }),
     }),
-    TypeOrmModule.forFeature([Expenses]),
+    TypeOrmModule.forFeature([Expenses, ExpensesAggregation]),
   ],
   controllers: [ExpensesController],
   providers: [ExpensesService],
