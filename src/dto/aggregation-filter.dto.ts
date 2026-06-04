@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Transform, Type } from "class-transformer";
-import { IsNumber, IsOptional, IsString } from "class-validator";
+import { Type } from 'class-transformer';
+import { IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class AggregationFilterDTO {
   @ApiProperty({ required: false, description: 'Filter by client ID' })

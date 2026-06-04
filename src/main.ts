@@ -8,14 +8,13 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   // 1700 is the OID for the NUMERIC type in PostgreSQL
-  types.setTypeParser(1700, (val) => parseFloat(val));
-  
+  types.setTypeParser(1700, (val: string) => parseFloat(val));
+
   app.enableShutdownHooks();
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
       whitelist: true,
-      
     }),
   );
   const port = process.env.PORT ?? 3000;
@@ -23,4 +22,4 @@ async function bootstrap() {
     logger.verbose(`Server is running on port ${port}`);
   });
 }
-bootstrap();
+bootstrap().catch((e) => console.error(e));

@@ -8,14 +8,14 @@ export enum Status {
   voided = 'voided',
 }
 
-const CURRENCIES = process.env.CURRENCIES?.split(",") || ["USD"];
+const CURRENCIES = process.env.CURRENCIES?.split(',') || ['USD'];
 
 export class ExpensesCreateDTO {
   @ApiProperty({ description: 'Client identifier (UUID, MongoID, or other string identifier)' })
   @IsString()
   clientId: string;
 
-  @ApiProperty({ description: 'Expense amount', example: 100.50 })
+  @ApiProperty({ description: 'Expense amount', example: 100.5 })
   @IsNumber()
   @Type(() => Number)
   @Min(0)

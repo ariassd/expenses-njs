@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 import { Status } from './dto/expenses-create.dto';
-import { Transform } from 'class-transformer';
 
 @Entity()
 @Index(['clientId'])
@@ -15,7 +14,7 @@ export class Expenses {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ApiProperty({ description: 'Expense amount', example: 100.50 })
+  @ApiProperty({ description: 'Expense amount', example: 100.5 })
   @Column({ type: 'numeric', precision: 12, scale: 4 })
   amount: number;
 
@@ -44,14 +43,14 @@ export class Expenses {
   creationDate: Date;
 
   @ApiProperty({ description: 'Year of expense', example: 2026 })
-  @Column({ type: 'int'})
+  @Column({ type: 'int' })
   year: number;
 
   @ApiProperty({ description: 'Month of expense (1-12)', example: 6 })
-  @Column({ type: 'int'})
+  @Column({ type: 'int' })
   month: number;
 
   @ApiProperty({ description: 'Day of month', example: 3 })
-  @Column({ type: 'int'})
+  @Column({ type: 'int' })
   day: number;
 }

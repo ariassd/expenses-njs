@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsEnum, IsNumber, Min } from "class-validator";
+import { IsBoolean, IsEnum, IsNumber, Min } from 'class-validator';
 
 export enum SortOrder {
   ASC = 'asc',
