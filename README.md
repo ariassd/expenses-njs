@@ -1,98 +1,139 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+![](assets/header.png)
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+# Expenses Micro Service
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+A RESTful microservice for managing expenses, built with **NestJS**, **TypeORM**, and **PostgreSQL**. This service provides CRUD operations for expense records with filtering, pagination, and status management capabilities.
 
-## Description
+## Features
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- **Create** new expense records with validation
+- **List** expenses with pagination and search filtering
+- **Retrieve** single expense by ID
+- **Update** expense status with business rules validation
+- **Search** across multiple fields (id, amount, description, status, category)
+- **Pagination** support with configurable page size and sort order
+- **Aggregations** - Track expense counts and totals by client, category, year, month, and currency
 
-## Project setup
+## Tech Stack
+
+- **Runtime**: Node.js 26+
+- **Framework**: NestJS
+- **Database**: PostgreSQL
+- **ORM**: TypeORM
+- **Validation**: class-validator
+- **Documentation**: Swagger
+
+## Project Setup
 
 ```bash
+# Install dependencies
 $ npm install
 ```
 
-## Compile and run the project
+## Compile and Run
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
+# Development mode (with hot-reload)
 $ npm run start:dev
 
-# production mode
+# Production build
+$ npm run build
+
+# Production mode
 $ npm run start:prod
 ```
 
-## Run tests
+## Configuration (.env)
+
+Create a `.env` file in the project root with the following variables:
+
+```env
+
+# DATABASE_URL=postgresql://postgres:your_password@localhost:5432/expenses_db
+
+# Application Configuration
+NODE_ENV=development
+PORT=3000
+
+CURRENCIES=EUR,USD,CRC
+
+# TypeORM Configuration
+TYPEORM_SYNCHRONIZE=true
+TYPEORM_LOGGING=true
+```
+
+### Environment Variables Description
+
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `DATABASE_URL` | Yes | - | Full connection string |
+| `NODE_ENV` | No | development | Environment mode (development, production, test) |
+| `PORT` | No | 3000 | HTTP server port |
+| `TYPEORM_SYNCHRONIZE` | No | false | Auto-create database tables (for development only) |
+| `TYPEORM_LOGGING` | No | false | Enable TypeORM query logging |
+
+## API Documentation
+
+You can find OpenAPI/Swagger documentation in the `./api-docs` folder. The documentation includes:
+- `swagger-spec.json` - OpenAPI specification in JSON format
+- `swagger-spec.yml` - OpenAPI specification in YAML format
+
+To update the documentation, run:
+```bash
+npm run gen-docs
+```
+
+This script generates the documentation files based on the current API routes and decorators.
+
+
+
+
+## Base URL
+```
+http://localhost:3000/v1/expenses
+```
+
+### Example Requests
+
+**List expenses with pagination:**
+```bash
+curl -X GET "http://localhost:3000/v1/expenses?pagination.page=1&pagination.limit=10&pagination.sort=desc"
+```
+
+**Search expenses:**
+```bash
+curl -X GET "http://localhost:3000/v1/expenses?queryFilter=food"
+```
+
+**Combined search and pagination:**
+```bash
+curl -X GET "http://localhost:3000/v1/expenses?queryFilter=travel&pagination.page=2&pagination.limit=50"
+```
+
+## Running Tests
 
 ```bash
-# unit tests
+# Unit tests
 $ npm run test
 
-# e2e tests
+# E2E tests
 $ npm run test:e2e
 
-# test coverage
+# Test coverage
 $ npm run test:cov
 ```
 
-## Deployment
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+## Stay in Touch
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+**Author**: Luis Arias | [@ariassd](https://github.com/ariassd)
 
 ## License
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+This project is **open source** and licensed under the [MIT License](LICENSE).
+
+![](assets/MIT.png) ![](assets/open-source.png)
+
+---
+
+&copy; 2026 Luis Arias. All rights reserved.
