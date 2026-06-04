@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return, @typescript-eslint/unbound-method */
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -28,7 +29,7 @@ describe('ExpensesService', () => {
       year: 2026,
       month: 6,
       day: 1,
-    } as Expenses,
+    },
     {
       id: 'uuid-2',
       amount: 200,
@@ -41,7 +42,7 @@ describe('ExpensesService', () => {
       year: 2026,
       month: 6,
       day: 2,
-    } as Expenses,
+    },
   ];
 
   beforeEach(async () => {
@@ -53,20 +54,13 @@ describe('ExpensesService', () => {
           useValue: {
             createQueryBuilder: jest.fn(),
             findOneBy: jest.fn(),
-            insert: jest.fn(),
-            orIgnore: jest.fn(),
-            returning: jest.fn(),
-            execute: jest.fn(),
           },
         },
         {
           provide: getRepositoryToken(ExpensesAggregation),
           useValue: {
-            create: jest.fn(),
-            save: jest.fn(),
-            findOneBy: jest.fn(),
+            query: jest.fn(),
             createQueryBuilder: jest.fn(),
-            getMany: jest.fn(),
           },
         },
       ],
@@ -97,17 +91,7 @@ describe('ExpensesService', () => {
         execute: jest.fn().mockResolvedValue({ raw: [mockExpenses[0]] }),
       };
 
-      const mockAggQueryBuilder = {
-        insert: jest.fn().mockReturnThis(),
-        into: jest.fn().mockReturnThis(),
-        values: jest.fn().mockReturnThis(),
-        orIgnore: jest.fn().mockReturnThis(),
-        onConflict: jest.fn().mockReturnThis(),
-        set: jest.fn().mockReturnThis(),
-        execute: jest.fn().mockResolvedValue({}),
-      };
-
-      expensesRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder);
+      expensesRepository.createQueryBuilder.mockImplementation(() => mockQueryBuilder as any);
       aggregationRepository.query = jest.fn().mockResolvedValue({});
 
       const result = await service.create(dto);
@@ -136,7 +120,7 @@ describe('ExpensesService', () => {
         execute: jest.fn().mockResolvedValue({ raw: [] }),
       };
 
-      expensesRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder);
+      expensesRepository.createQueryBuilder.mockImplementation(() => mockQueryBuilder as any);
 
       await expect(service.create(dto)).rejects.toThrow('Already exists');
     });
@@ -159,7 +143,7 @@ describe('ExpensesService', () => {
         getManyAndCount: jest.fn().mockResolvedValue([[mockExpenses[0]], 1]),
       };
 
-      expensesRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder);
+      expensesRepository.createQueryBuilder.mockImplementation(() => mockQueryBuilder as any);
 
       const result = await service.list(dto);
 
@@ -187,7 +171,7 @@ describe('ExpensesService', () => {
         getManyAndCount: jest.fn().mockResolvedValue([mockExpenses, 2]),
       };
 
-      expensesRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder);
+      expensesRepository.createQueryBuilder.mockImplementation(() => mockQueryBuilder as any);
 
       const result = await service.list(dto);
 
@@ -230,7 +214,7 @@ describe('ExpensesService', () => {
         execute: jest.fn().mockResolvedValue({ raw: [mockExpenses[0]] }),
       };
 
-      expensesRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder);
+      expensesRepository.createQueryBuilder.mockImplementation(() => mockQueryBuilder as any);
 
       const dto: ExpensesUpdateStatusDTO = { status: Status.reviewed };
       const result = await service.changeStatus('uuid-1', dto);
@@ -248,13 +232,11 @@ describe('ExpensesService', () => {
         execute: jest.fn().mockResolvedValue({ raw: [] }),
       };
 
-      expensesRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder);
+      expensesRepository.createQueryBuilder.mockImplementation(() => mockQueryBuilder as any);
 
       const dto: ExpensesUpdateStatusDTO = { status: Status.reviewed };
 
-      await expect(service.changeStatus('uuid-1', dto)).rejects.toThrow(
-        'Expense not found or its status is not valid',
-      );
+      await expect(service.changeStatus('uuid-1', dto)).rejects.toThrow('Expense not found or its status is not valid');
     });
   });
 
@@ -286,9 +268,7 @@ describe('ExpensesService', () => {
         getMany: jest.fn().mockResolvedValue(mockAggregations),
       };
 
-      aggregationRepository.createQueryBuilder.mockReturnValue(
-        mockQueryBuilder,
-      );
+      aggregationRepository.createQueryBuilder.mockImplementation(() => mockQueryBuilder as any);
 
       const result = await service.getAggregations(filter);
 
@@ -319,9 +299,7 @@ describe('ExpensesService', () => {
         getMany: jest.fn().mockResolvedValue(mockAggregations),
       };
 
-      aggregationRepository.createQueryBuilder.mockReturnValue(
-        mockQueryBuilder,
-      );
+      aggregationRepository.createQueryBuilder.mockImplementation(() => mockQueryBuilder as any);
 
       const result = await service.getAggregations(filter);
 

@@ -34,7 +34,7 @@ export class ExpensesService {
       .returning('*')
       .execute();
 
-    const ne: Expenses = (await r).raw[0];
+    const ne: Expenses = r.raw[0] as Expenses;
 
     if (!ne) throw new ConflictException('Already exists');
 
@@ -115,7 +115,7 @@ export class ExpensesService {
       .returning('*')
       .execute();
 
-    const updated = r.raw[0];
+    const updated = r.raw[0] as Expenses;
     if (!updated) {
       throw new NotFoundException('Expense not found or its status is not valid');
     }

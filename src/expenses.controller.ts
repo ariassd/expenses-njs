@@ -1,20 +1,5 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  Post,
-  Put,
-  Query,
-} from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiBody,
-  ApiParam,
-  ApiQuery,
-} from '@nestjs/swagger';
+import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { ExpensesService } from './expenses.service';
 import { Expenses } from './expenses.entity';
 import { ExpensesAggregation } from './expenses-aggregation.entity';
@@ -59,9 +44,7 @@ export class ExpensesController {
     type: ExpensesAggregation,
     isArray: true,
   })
-  async getAggregations(
-    @Query() filter: AggregationFilterDTO,
-  ): Promise<ExpensesAggregation[]> {
+  async getAggregations(@Query() filter: AggregationFilterDTO): Promise<ExpensesAggregation[]> {
     return this.service.getAggregations(filter);
   }
 
@@ -83,10 +66,7 @@ export class ExpensesController {
     status: 404,
     description: 'Expense not found or invalid status',
   })
-  async updateStatus(
-    @Param('id') id: string,
-    @Body() dto: ExpensesUpdateStatusDTO,
-  ): Promise<Expenses | null> {
+  async updateStatus(@Param('id') id: string, @Body() dto: ExpensesUpdateStatusDTO): Promise<Expenses | null> {
     return this.service.changeStatus(id, dto);
   }
 }

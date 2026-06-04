@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Column, CreateDateColumn, Entity, Index, PrimaryColumn, UpdateDateColumn } from 'typeorm';
 
 @Entity({
-  name: "expenses_aggregation"
+  name: 'expenses_aggregation',
 })
 @Index(['clientId', 'category', 'year', 'month', 'day', 'currency'], { unique: true })
 export class ExpensesAggregation {
