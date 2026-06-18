@@ -20,10 +20,9 @@ export class ExpensesHandler {
       deadLetterRoutingKey: `${process.env.AMQP_REGISTER_EXPENSES_ROUTING_KEY || 'com.my_company.expenses.create'}.dead_letter`,
     },
   })
-  async create(payload: ExpensesCreateDTO): Promise<Nack> {
+  async create(payload: ExpensesCreateDTO): Promise<Nack|void> {
     try {
       await this.service.create(payload);
-      return new Nack(true);
     } catch (e) {
       const errorMessage = e instanceof Error ? e.message : 'Unknown error occurred';
       this.logger.error('Failed to process message in "register_expenses"', errorMessage);
@@ -39,10 +38,9 @@ export class ExpensesHandler {
       deadLetterExchange: `${process.env.AMQP_EXCHANGE || 'com.my_company'}.dead_letter`,
     },
   })
-  async updateStatus(payload: { id: string; dto: ExpensesUpdateStatusDTO }): Promise<Nack> {
+  async updateStatus(payload: { id: string; dto: ExpensesUpdateStatusDTO }): Promise<Nack|void> {
     try {
       await this.service.changeStatus(payload.id, payload.dto);
-      return new Nack(true);
     } catch (e) {
       const errorMessage = e instanceof Error ? e.message : 'Unknown error occurred';
       this.logger.error('Failed to process message in "update_status"', errorMessage);
