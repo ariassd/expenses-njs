@@ -3,7 +3,6 @@ import { ExpensesUpdateStatusDTO } from './dto/expenses-update-status.dto';
 import { ExpensesCreateDTO } from './dto/expenses-create.dto';
 import { Injectable, Logger } from '@nestjs/common';
 import { RabbitSubscribe, Nack } from '@golevelup/nestjs-rabbitmq';
-import { ConsumeMessage } from 'amqplib';
 
 @Injectable()
 export class ExpensesHandler {
@@ -14,38 +13,39 @@ export class ExpensesHandler {
 
   @RabbitSubscribe({
     exchange: process.env.AMQP_EXCHANGE || 'com.my_company',
-    queue: process.env.AMQP_REGISTER_EXPENSES_QUEUE || 'com.my_company.expenses',
-    routingKey: process.env.AMQP_REGISTER_EXPENSES_ROUTING_KEY || 'com.my_company.expenses.register_expenses',
+    queue: process.env.AMQP_REGISTER_EXPENSES_QUEUE || 'com.my_company.expenses.create',
+    routingKey: process.env.AMQP_REGISTER_EXPENSES_ROUTING_KEY || 'com.my_company.expenses.create',
+    queueOptions: {
+      deadLetterExchange: `${process.env.AMQP_EXCHANGE || 'com.my_company'}.dead_letter`,
+      deadLetterRoutingKey: `${process.env.AMQP_REGISTER_EXPENSES_ROUTING_KEY || 'com.my_company.expenses.create'}.dead_letter`,
+    },
   })
-  async create(dto: ExpensesCreateDTO, amqpMsg: ConsumeMessage): Promise<Nack> {
-    const retryCount = (amqpMsg.properties.headers?.['x-retry-count'] ?? 0) as number;
+  async create(payload: ExpensesCreateDTO): Promise<Nack> {
     try {
-      await this.service.create(dto);
+      await this.service.create(payload);
       return new Nack(true);
     } catch (e) {
-      this.logger.warn('Failed to process message in "register_expenses"', e);
-      if (retryCount < 3) {
-        return new Nack(true);
-      }
+      const errorMessage = e instanceof Error ? e.message : 'Unknown error occurred';
+      this.logger.error('Failed to process message in "register_expenses"', errorMessage);
       return new Nack(false);
     }
   }
 
   @RabbitSubscribe({
     exchange: process.env.AMQP_EXCHANGE || 'com.my_company',
-    queue: process.env.AMQP_UPDATE_EXPENSES_STATUS_QUEUE || 'com.my_company.expenses',
-    routingKey: process.env.AMQP_UPDATE_EXPENSES_STATUS_ROUTING_KEY || 'com.my_company.expenses.update_expenses_status',
+    queue: process.env.AMQP_UPDATE_EXPENSES_STATUS_QUEUE || 'com.my_company.expenses.update_status',
+    routingKey: process.env.AMQP_UPDATE_EXPENSES_STATUS_ROUTING_KEY || 'com.my_company.expenses.update_status',
+    queueOptions: {
+      deadLetterExchange: `${process.env.AMQP_EXCHANGE || 'com.my_company'}.dead_letter`,
+    },
   })
-  async updateStatus(msg: { id: string; dto: ExpensesUpdateStatusDTO }, amqpMsg: ConsumeMessage): Promise<Nack> {
-    const retryCount = (amqpMsg.properties.headers?.['x-retry-count'] ?? 0) as number;
+  async updateStatus(payload: { id: string; dto: ExpensesUpdateStatusDTO }): Promise<Nack> {
     try {
-      await this.service.changeStatus(msg.id, msg.dto);
+      await this.service.changeStatus(payload.id, payload.dto);
       return new Nack(true);
     } catch (e) {
-      this.logger.warn('Failed to process message in "update_expenses_status"', e);
-      if (retryCount < 3) {
-        return new Nack(true);
-      }
+      const errorMessage = e instanceof Error ? e.message : 'Unknown error occurred';
+      this.logger.error('Failed to process message in "update_status"', errorMessage);
       return new Nack(false);
     }
   }

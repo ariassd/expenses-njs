@@ -62,6 +62,7 @@ CURRENCIES=EUR,USD,CRC
 
 # RabbitMQ Configuration
 AMQP_URI=amqp://localhost:5672
+AMQP_PREFETCH_COUNT=10
 AMQP_EXCHANGE=my_company
 AMQP_REGISTER_EXPENSES_QUEUE=com.my_company.expenses
 AMQP_REGISTER_EXPENSES_ROUTING_KEY=com.my_company.expenses.register_expenses
@@ -82,6 +83,7 @@ TYPEORM_LOGGING=true
 | `PORT` | No | 3000 | HTTP server port |
 | `CURRENCIES` | No | - | Comma-separated list of valid ISO 4217 currency codes (e.g., USD,EUR,CRC) |
 | `AMQP_URI` | Yes | - | RabbitMQ connection URI (e.g., amqp://user:pass@localhost:5672) |
+| `AMQP_PREFETCH_COUNT` | No | 10 | RabbitMQ prefetch count or batch |
 | `AMQP_EXCHANGE` | No | my_company | RabbitMQ exchange name |
 | `AMQP_REGISTER_EXPENSES_QUEUE` | No | com.my_company.expenses. | Queue for expense registration messages |
 | `AMQP_REGISTER_EXPENSES_ROUTING_KEY` | No | com.my_company.expenses.register_expenses | Routing key for expense registration |
