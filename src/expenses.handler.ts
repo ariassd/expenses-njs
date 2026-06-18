@@ -20,7 +20,7 @@ export class ExpensesHandler {
       deadLetterRoutingKey: `${process.env.AMQP_REGISTER_EXPENSES_ROUTING_KEY || 'com.my_company.expenses.create'}.dead_letter`,
     },
   })
-  async create(payload: ExpensesCreateDTO): Promise<Nack|void> {
+  async create(payload: ExpensesCreateDTO): Promise<Nack | void> {
     try {
       await this.service.create(payload);
     } catch (e) {
@@ -38,7 +38,7 @@ export class ExpensesHandler {
       deadLetterExchange: `${process.env.AMQP_EXCHANGE || 'com.my_company'}.dead_letter`,
     },
   })
-  async updateStatus(payload: { id: string; dto: ExpensesUpdateStatusDTO }): Promise<Nack|void> {
+  async updateStatus(payload: { id: string; dto: ExpensesUpdateStatusDTO }): Promise<Nack | void> {
     try {
       await this.service.changeStatus(payload.id, payload.dto);
     } catch (e) {
