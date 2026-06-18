@@ -19,7 +19,7 @@ export class ExpensesController {
   @ApiBody({ type: ExpensesCreateDTO })
   @ApiResponse({ status: 201, description: 'Expense created', type: Expenses })
   @ApiResponse({ status: 409, description: 'Conflict - already exists' })
-  create(@Body() dto: ExpensesCreateDTO): Promise<Expenses> {
+  async create(@Body() dto: ExpensesCreateDTO): Promise<Expenses> {
     return this.service.create(dto);
   }
 
